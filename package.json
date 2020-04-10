@@ -6,7 +6,8 @@
   "scripts": {
     "prepack": "rm -rf dist/ && npm run build",
     "build": "tsc -p .",
-    "test": "nyc --reporter=text ts-mocha"
+    "test": "nyc --reporter=text ts-mocha",
+    "test:ci": "nyc --reporter=lcov ts-mocha"
   },
   "keywords": [
     "nestjs",

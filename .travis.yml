@@ -2,7 +2,7 @@ language: node_js
 node_js:
   - 10
 script:
-  - npm run test
+  - npm run test:ci
   - npm run build
   - npm install codecov -g
 after_success:
