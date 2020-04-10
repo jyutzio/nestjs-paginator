@@ -25,11 +25,11 @@ function contextFactory(query: Request['query']): Partial<ExecutionContext> {
       Object({
         getRequest: (): Partial<Request> =>
           Object({
-            path: 'mockPath',
-            query: query,
             protocol: 'http',
             get: () => 'localhost',
-            originalUrl: '/paginator',
+            baseUrl: '/items',
+            path: '/all',
+            query: query,
           }),
       }),
   };
@@ -47,7 +47,7 @@ describe('Decorator', function () {
       limit: undefined,
       sortBy: undefined,
       orderBy: undefined,
-      path: 'http://localhost/paginator',
+      path: 'http://localhost/items/all',
     });
   });
 
@@ -66,7 +66,7 @@ describe('Decorator', function () {
       limit: 20,
       sortBy: 'id',
       orderBy: 'ASC',
-      path: 'http://localhost/paginator',
+      path: 'http://localhost/items/all',
     });
   });
 });

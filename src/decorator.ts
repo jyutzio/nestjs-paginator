@@ -14,7 +14,11 @@ export const Paginator = createParamDecorator(
     const request: Request = ctx.switchToHttp().getRequest();
     const { query } = request;
     const path =
-      request.protocol + '://' + request.get('host') + request.originalUrl;
+      request.protocol +
+      '://' +
+      request.get('host') +
+      request.baseUrl +
+      request.path;
     return {
       page: query.page ? parseInt(query.page.toString(), 10) : undefined,
       limit: query.limit ? parseInt(query.limit.toString(), 10) : undefined,

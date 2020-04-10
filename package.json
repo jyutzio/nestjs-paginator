@@ -1,6 +1,6 @@
 {
   "name": "nestjs-paginator",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "A package to make pagination with NestJS, TypeORM, and Express as simple as possible.",
   "main": "dist/index.js",
   "scripts": {
