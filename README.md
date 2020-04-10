@@ -104,7 +104,7 @@ export class CatService {
     @InjectRepository(CatEntity)
     private readonly catRepository: Repository<CatEntity>
   ) {}
-  public getUsers(query: PaginatorQuery): Promise<Paginated<CatEntity>> {
+  public getAllCats(query: PaginatorQuery): Promise<Paginated<CatEntity>> {
     return paginator(query, this.catRepository, {
       sortableColumns: ['name', 'color'],
       defaultSortBy: 'name',
@@ -117,10 +117,10 @@ export class CatController {
   constructor(private readonly catService: CatService) {}
 
   @Get('all)
-  public getUsers(
+  public getAllCats(
     @Paginator() query: PaginatorQuery
   ): Promise<Paginated<CatEntity>> {
-    return this.catService.getUsers(query);
+    return this.catService.getAllCats(query);
   }
 }
 ```
