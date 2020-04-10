@@ -1,0 +1,6 @@
+{
+  "spec": "src/__test__/*test.ts",
+  "extension": [
+    "ts"
+  ]
+}

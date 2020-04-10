@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "target": "es2015",
+    "outDir": "dist",
+    "esModuleInterop": true,
+    "declaration": true,
+    "incremental": false,
+    "strict": true,
+    "strictPropertyInitialization": false,
+    "experimentalDecorators": true,
+  },
+  "include": [
+    "src"
+  ],
+  "exclude": [
+    "src/__test__/*",
+  ]
+}
