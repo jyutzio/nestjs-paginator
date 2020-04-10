@@ -26,12 +26,13 @@ export class Paginated<T> {
 
 export interface PaginatorConfig<T> {
   sortableColumns: SortBy<T>[];
-  maxLimit?: number; // if not set, will default to 100
-  defaultSortBy?: SortBy<T>; // if not set will default to first sortable column
+  maxLimit?: number;
+  defaultSortBy?: SortBy<T>;
   defaultOrderBy?: OrderBy;
-  defaultLimit?: number; // if doesn't exist will default to 20
+  defaultLimit?: number;
   where?: FindConditions<T>;
 }
+
 export async function paginator<Entity>(
   query: PaginatorQuery,
   repo: Repository<Entity>,
@@ -62,10 +63,10 @@ export async function paginator<Entity>(
   }
 
   const [items, totalItems] = await repo
-    .createQueryBuilder()
+    .createQueryBuilder('e')
     .take(limit)
     .skip((page - 1) * limit)
-    .orderBy(sortBy, orderBy)
+    .orderBy('e.' + sortBy, orderBy)
     .where(config.where || {})
     .getManyAndCount();
   let totalPages = totalItems / limit;
