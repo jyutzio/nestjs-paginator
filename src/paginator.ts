@@ -1,4 +1,4 @@
-import { Repository, FindConditions } from 'typeorm';
+import { Repository, FindConditions, SelectQueryBuilder } from 'typeorm';
 import { PaginatorQuery } from './decorator';
 import { ServiceUnavailableException } from '@nestjs/common';
 
@@ -19,6 +19,7 @@ export class Paginated<T> {
   links: {
     firstPage?: string;
     previousPage?: string;
+    currentPage: string;
     nextPage?: string;
     lastPage?: string;
   };
@@ -31,11 +32,12 @@ export interface PaginatorConfig<T> {
   defaultOrderBy?: OrderBy;
   defaultLimit?: number;
   where?: FindConditions<T>;
+  queryBuilder?: SelectQueryBuilder<T>;
 }
 
 export async function paginator<Entity>(
   query: PaginatorQuery,
-  repo: Repository<Entity>,
+  repo: Repository<Entity> | SelectQueryBuilder<Entity>,
   config: PaginatorConfig<Entity>
 ): Promise<Paginated<Entity>> {
   let page = query.page || 1;
@@ -62,13 +64,24 @@ export async function paginator<Entity>(
     sortBy = sortableColumns[0];
   }
 
-  const [items, totalItems] = await repo
-    .createQueryBuilder('e')
-    .take(limit)
-    .skip((page - 1) * limit)
-    .orderBy('e.' + sortBy, orderBy)
-    .where(config.where || {})
-    .getManyAndCount();
+  let [items, totalItems]: [Entity[], number] = [[], 0];
+
+  if (repo instanceof Repository) {
+    [items, totalItems] = await repo
+      .createQueryBuilder('e')
+      .take(limit)
+      .skip((page - 1) * limit)
+      .orderBy('e.' + sortBy, orderBy)
+      .where(config.where || {})
+      .getManyAndCount();
+  } else {
+    [items, totalItems] = await repo
+      .take(limit)
+      .skip((page - 1) * limit)
+      .orderBy(repo.alias + '.' + sortBy, orderBy)
+      .getManyAndCount();
+  }
+
   let totalPages = totalItems / limit;
   if (totalItems % limit) totalPages = Math.ceil(totalPages);
 
@@ -92,6 +105,7 @@ export async function paginator<Entity>(
     links: {
       firstPage: page == 1 ? undefined : buildLink(1),
       previousPage: page - 1 < 1 ? undefined : buildLink(page - 1),
+      currentPage: buildLink(page),
       nextPage: page + 1 > totalPages ? undefined : buildLink(page + 1),
       lastPage: page == totalPages ? undefined : buildLink(totalPages),
     },
