@@ -27,6 +27,7 @@ export class Paginated<T> {
 
 export interface PaginatorConfig<T> {
   sortableColumns: SortBy<T>[];
+  columnAliases?: { [key: string]: string };
   maxLimit?: number;
   defaultSortBy?: SortBy<T>;
   defaultOrderBy?: OrderBy;
@@ -52,7 +53,7 @@ export async function paginator<Entity>(
     return !!sortableColumns.find((c) => c === column);
   }
 
-  const { sortableColumns, defaultSortBy } = config;
+  const { sortableColumns, defaultSortBy, columnAliases } = config;
   if (config.sortableColumns.length < 1)
     throw new ServiceUnavailableException();
   let sortBy: SortBy<Entity>;
@@ -75,10 +76,15 @@ export async function paginator<Entity>(
       .where(config.where || {})
       .getManyAndCount();
   } else {
+    let sortColumn = repo.alias + '.' + sortBy;
+    if (columnAliases && columnAliases[sortBy]) {
+      sortColumn = columnAliases[sortBy];
+    }
+
     [items, totalItems] = await repo
       .take(limit)
       .skip((page - 1) * limit)
-      .orderBy(repo.alias + '.' + sortBy, orderBy)
+      .orderBy(sortColumn, orderBy)
       .getManyAndCount();
   }
 
